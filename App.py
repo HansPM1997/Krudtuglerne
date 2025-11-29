@@ -33,7 +33,7 @@ st.dataframe(df_filtered)
 st.image("poxycat.jpeg")
 
 with st.sidebar:
-    st.header("Smagningens karakteristika")
+    st.header("De vigtige detaljer")
     # Tema
     tema = st.text_input(
         "Aftenens tema",
@@ -63,17 +63,47 @@ with st.sidebar:
         accept_new_options=True,
         width='stretch'
     )
+
+    # ---- Validation ----
+    missing_fields = []
+    if not tema:
+        missing_fields.append("tema")
+    if not lokation:
+        missing_fields.append("lokation")
+    if dato is None:
+        missing_fields.append("dato")
+    if runder is None or runder <= 0:
+        missing_fields.append("antal runder")
+
+    download_disabled = len(missing_fields) > 0
+
+    if download_disabled:
+        st.warning(
+            "Du mangler at indtaste følgende: "
+            + ", ".join(missing_fields)
+        )
+
+    # Kun generér data hvis alle felter er udfyldt
+    if not download_disabled:
+        excel_data = Func.setup_participants_and_rounds(
+            tema,
+            lokation,
+            dato,
+            deltagere,
+            runder
+        )
+    else:
+        excel_data = b""  # placeholder, knappen er alligevel disabled
+
     # Knap til Excel
-    st.download_button(
+    download = st.download_button(
         label='Download template',
-        data=Func.setup_participants_and_rounds(
-        tema,
-        lokation,
-        dato,
-        deltagere,
-        runder
-        ),
-        file_name=f'Krudtuglerne - {tema} - {dato}.xlsx',
-        mime='application/octet.stream'
+        data=excel_data,
+        file_name=f'Krudtuglerne - {tema or "uden_tema"} - {dato}.xlsx',
+        mime='application/octet-stream',
+        disabled=download_disabled
     )
+
+    if download:
+        st.success("I maltets rige.... er alle lige! SKÅL!")
 
