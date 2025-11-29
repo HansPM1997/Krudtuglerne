@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from pathlib import Path
+from io import BytesIO
 
 import Helpers as Help
 
@@ -128,10 +129,10 @@ def setup_participants_and_rounds(
     # Restore border in column E
     Help.restore_left_border_col_E(ws)
 
-    filename_out = project_dir / f"Krudtuglerne - {tema} - {dato}.xlsx"
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
 
-    wb.save(filename_out)
-
-    return filename_out
+    return buffer
 
 

@@ -64,20 +64,16 @@ with st.sidebar:
         width='stretch'
     )
     # Knap til Excel
-    excel = st.button(
-        label="Lav Excel fil",
-        width='stretch',
-        type='primary',
-        icon="😃"
+    st.download_button(
+        label='Download template',
+        data=Func.setup_participants_and_rounds(
+        tema,
+        lokation,
+        dato,
+        deltagere,
+        runder
+        ),
+        file_name=f'Krudtuglerne - {tema} - {dato}.xlsx',
+        mime='application/octet.stream'
     )
-
-    if excel:
-        path = Func.setup_participants_and_rounds(
-            tema,
-            lokation,
-            dato,
-            deltagere,
-            runder
-        )
-        st.success(f'Ja tak, chef. Filen er uploadet til: {path}', icon="✅")
 
